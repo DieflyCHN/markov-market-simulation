@@ -84,5 +84,5 @@ This project prioritizes **clarity of mechanisms over realism**, aiming to build
 
 All core components of this project (market model, strategy logic, and account system) were implemented manually within a short prototyping timeframe (<24 hours).
 
-External assistance was only used for minor utilities such as plotting (`plot.py`).  
+External assistance was only used for minor utilities such as plotting (`plot.py`) and this `README`.  
 The focus of this project is on **model construction and conceptual clarity**, rather than code generation.
