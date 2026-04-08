@@ -59,4 +59,4 @@ class Account:
         return sell_count > 0
     
     def has_position(self):
-        len(self.positions) > 0
+        return len(self.positions) > 0
