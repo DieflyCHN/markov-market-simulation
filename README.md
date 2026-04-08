@@ -24,7 +24,7 @@ The system consists of three layers:
    - Regime-switching process (Markov chain)
    - Each regime produces different price dynamics
 
-2. **Strategy (Policy)**
+2. **Strategy (Trady)**
    - Rule-based decision functions (e.g., mean reversion, momentum)
    - Operates only on observable variables
 
