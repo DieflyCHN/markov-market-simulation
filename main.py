@@ -32,6 +32,5 @@ while market_index.tick < 10000:
 
     market_index.next_tick()
 
-account.update_book_value(market_index.current_price)
 print(account.book_value)
 plot_result(market_index.price_history, account.book_value_history)
