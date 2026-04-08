@@ -34,7 +34,7 @@ from market_simulation.market_state import MarketState
 #     # Transition to next state (Markov chain)
 #     market.next_state()
 
-#     # binput("Press Enter for next tick...")
+#     # input("Press Enter for next tick...")
 #     step += 1
 
 class MarketIndex:
