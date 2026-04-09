@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import random
+from config import MARKET_STATE_CONFIG
+CFG = MARKET_STATE_CONFIG
 
 class MarketState:
     """
@@ -12,9 +14,9 @@ class MarketState:
     def __init__(self):
         self.state = "fluc"
         self.transition = {
-            "bull":    {"bull": 0.8, "bear": 0.1, "fluc":0.1},
-            "bear":    {"bull": 0.1, "bear": 0.8, "fluc":0.1},
-            "fluc":    {"bull": 0.3, "bear": 0.3, "fluc":0.4},
+            "bull":    {"bull": CFG.BULL_TO_BULL, "bear": CFG.BULL_TO_BEAR, "fluc":CFG.BULL_TO_FLUC},
+            "bear":    {"bull": CFG.BEAR_TO_BULL, "bear": CFG.BEAR_TO_BEAR, "fluc":CFG.BEAR_TO_FLUC},
+            "fluc":    {"bull": CFG.FLUC_TO_BULL, "bear": CFG.FLUC_TO_BEAR, "fluc":CFG.FLUC_TO_FLUC},
         }
 
     def next_state(self):
@@ -43,50 +45,13 @@ class MarketState:
 
         Returns:
             new_price: updated price
-            state: the state used to generate this price change
         """
         if self.state == "bull":
-            pct = random.uniform(0.1, 0.51)
+            pct = random.uniform(CFG.BULL_PCT_LOWER, CFG.BULL_PCT_UPPER) / 100
         elif self.state == "bear":
-            pct = random.uniform(-0.5, -0.1)
+            pct = random.uniform(CFG.BEAR_PCT_LOWER, CFG.BEAR_PCT_UPPER) / 100
         else:   # Fluctuation
-            pct = random.uniform(-0.8, 0.8)
+            pct = random.uniform(CFG.FLUC_PCT_LOWER, CFG.FLUC_PCT_UPPER) / 100
         
-        new_price = current_price * (1 + pct / 100)
-        #return round (new_price, 2), self.state    # market "hidden" state
+        new_price = current_price * (1 + pct)
         return round (new_price, 2)
-
-# Before learning Markov chain. No Using.
-# # Simply Random Mode 
-# def simulate_random(current_price):
-#     # Just like in the Chinese stock market, the daily price (percentage) limit is 20%.
-#     pct = random.uniform(-0.2, 0.2)
-
-#     new_price = current_price * (1 + pct / 100)
-#     return round(new_price, 2)
-
-# # Trend Mode 
-# def simulate_trend(current_price, last_price):
-#     difference = current_price - last_price
-#     # The effects or impacts of the `trend` can be adjusted.
-#     if difference > 0:
-#         trend = random.uniform(-0.03, 0.5)
-#     elif difference < 0:
-#         trend = random.uniform(-0.5, 0.03)
-#     elif difference == 0:
-#         trend = 0
-#     pct = trend + random.uniform(-0.2, 0.2)
-#     new_price = current_price * (1 + pct / 100)
-#     return round(new_price, 2)
-
-# # Fluctuation Mode
-# def simulate_fluc(current_price):
-#     # A random for "strong or weak" fluctuation
-#     if random.random() > 0.5:
-#         fluc = random.uniform(-0.5, 0.5)
-#     else:
-#         fluc = random.uniform(-0.1, 0.1)
-
-#     pct = fluc + random.uniform(-0.2, 0.2)
-#     new_price = current_price * (1 + pct / 100)
-#     return round(new_price, 2)
