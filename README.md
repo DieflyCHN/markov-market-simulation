@@ -1,88 +1,209 @@
-# Markov Market Simulation
+# Markov Regime-Switching Market Simulator
 
-A lightweight simulation framework to explore how different trading strategies behave under regime-switching stochastic environments.
+A minimal simulation framework for studying how trading strategies interact with stochastic market structures under controlled assumptions.
 
-## Motivation
+---
 
-This project was developed as a rapid prototype (<24 hours) to explore a core question:
+## 1. Objective
 
-**How does the effectiveness of a trading strategy depend on the underlying market structure?**
+This project investigates a central question:
 
-Instead of focusing on real-world data, the goal is to construct a controllable environment where:
+> **How does strategy performance depend on the structural properties of the market?**
 
-- Market regimes (bull / bear / fluctuation) are explicitly modeled
-- Strategies can be tested under different structural assumptions
-- Emergent behaviors (e.g., drawdown, convexity, path dependence) can be observed
+Rather than relying on historical data, the system constructs a **synthetic, fully controllable environment**, enabling:
 
-The emphasis is on **understanding mechanisms**, not building a production trading system.
+* Explicit manipulation of market regimes
+* Isolation of structural effects (trend persistence, volatility, path dependence)
+* Mechanistic understanding of strategy behavior
 
-## Core Idea
+The emphasis is on **model transparency and causal interpretation**, not predictive accuracy.
 
-The system consists of three layers:
+---
 
-1. **Environment (Market)**
-   - Regime-switching process (Markov chain)
-   - Each regime produces different price dynamics
+## 2. Model Overview
 
-2. **Strategy (Trady)**
-   - Rule-based decision functions (e.g., mean reversion, momentum)
-   - Operates only on observable variables
+The system is organized into three layers:
 
-3. **Execution (Account)**
-   - Position-level management
-   - Cash, holdings, and mark-to-market valuation
+### 2.1 Environment (Market)
 
-## Features
+* Hidden **Markov regime process** with three states:
 
-- Markovian regime-switching market model
-- Position-level portfolio tracking
-- Support for multiple strategies:
-  - Mean-reversion (buy after consecutive drops)
-  - Momentum (buy after consecutive rises)
-- Visualization of:
-  - Price dynamics
-  - Account equity curve
-- Experiments on:
-  - Strategy robustness
-  - Path dependence
-  - Risk asymmetry
+  * `bull` — positive drift
+  * `bear` — negative drift
+  * `fluc` — high volatility, near-zero drift
 
-## Example Findings
+* State evolution:
 
-- Mean-reversion strategies exhibit **negative convexity**:
-  - Risk increases during downturns
-  - Gains are truncated during recoveries
+  ```
+  S_t → S_{t+1}  via transition matrix P(S_{t+1} | S_t)
+  ```
 
-- Momentum strategies outperform in persistent regimes:
-  - Positive convexity
-  - Better alignment with regime persistence
+* Price dynamics:
 
-- Severe drawdowns are often **irrecoverable** due to multiplicative dynamics
+  ```
+  P_{t+1} = P_t · (1 + r_t)
+  ```
 
-- Stop-loss mechanisms act as **path-risk control**, not profit enhancers
+  where ( r_t ) is sampled from a state-dependent distribution.
 
-## Limitations
+* Key property:
 
-- No transaction costs or slippage
-- Simplified return distributions (uniform sampling)
-- Manually specified transition probabilities (not data-driven)
-- No statistical validation (single-path simulation)
+  * **Temporal persistence** (via Markov transitions)
+  * No intrinsic mean reversion in price level
 
-This project is intended as a **conceptual exploration tool**, not a realistic market model.
+---
 
-## Future Work
+### 2.2 Strategy (Trady)
 
-- Introduce transaction costs and market impact
-- Calibrate model parameters using real data
-- Monte Carlo simulations for statistical robustness
-- Risk-aware position sizing
-- Extension toward POMDP / RL-based agents
+Rule-based decision functions operating on **observable variables only**:
 
-This project prioritizes **clarity of mechanisms over realism**, aiming to build intuition about how strategies interact with stochastic environments.
+* Price
+* Up/down streaks (trend proxy)
 
-## Note on Code Authorship
+Supported archetypes:
 
-All core components of this project (market model, strategy logic, and account system) were implemented manually within a short prototyping timeframe (<24 hours).
+* **Momentum**: buy after consecutive increases
+* **Mean reversion**: buy after consecutive decreases
 
-External assistance was only used for minor utilities such as plotting (`plot.py`) and this `README`.  
-The focus of this project is on **model construction and conceptual clarity**, rather than code generation.
+Sell logic (position-level):
+
+* Take-profit
+* Stop-loss
+* Partial profit-taking
+
+---
+
+### 2.3 Execution (Account)
+
+* Tracks:
+
+  * Cash
+  * Multiple independent positions
+  * Mark-to-market equity
+
+* Each position maintains:
+
+  * Entry price
+  * Share count
+
+* Portfolio valuation:
+
+  ```
+  Equity = Cash + Σ(position_i_value)
+  ```
+
+* Execution is **order-driven**, decoupled from signal generation.
+
+---
+
+## 3. Simulation Timing Convention
+
+At each step:
+
+1. Observe current state ((P_t, \text{streak}_t))
+2. Generate trading decisions
+3. Execute trades at (P_t)
+4. Update equity
+5. Advance market to (P_{t+1})
+
+This implies:
+
+> Strategies react to **completed price information**, not intra-step changes.
+
+---
+
+## 4. Key Observations
+
+Empirical behaviors observed under typical configurations:
+
+### 4.1 Mean Reversion
+
+* Exhibits **negative convexity**
+* Accumulates risk during persistent downtrends
+* Recovers slowly due to multiplicative losses
+
+---
+
+### 4.2 Momentum
+
+* Benefits from regime persistence
+* Displays **positive convexity**
+* Performance highly sensitive to transition matrix
+
+---
+
+### 4.3 Path Dependence
+
+* Outcomes strongly depend on trajectory, not just distribution
+* Identical parameters can yield divergent equity curves
+
+---
+
+### 4.4 Irreversibility of Drawdowns
+
+Due to multiplicative dynamics:
+
+* A −50% loss requires +100% recovery
+* Large drawdowns are structurally difficult to recover from
+
+---
+
+### 4.5 Role of Stop-Loss
+
+* Functions as **path-risk control**
+* Reduces tail risk rather than increasing expected return
+
+---
+
+## 5. Limitations
+
+This is a deliberately simplified model:
+
+* No transaction costs or slippage
+* Uniform return distributions (no heavy tails)
+* Manually specified transition probabilities
+* No statistical validation (single-path runs)
+* No liquidity or market impact modeling
+
+---
+
+## 6. Design Philosophy
+
+The system prioritizes:
+
+* **Clarity over realism**
+* **Mechanisms over data-fitting**
+* **Interpretability over performance**
+
+It is best viewed as a **conceptual laboratory**, not a trading tool.
+
+---
+
+## 7. Future Directions
+
+* Monte Carlo simulation (distribution-level analysis)
+* Parameter calibration using empirical data
+* Transaction cost and slippage modeling
+* Risk-aware position sizing
+* Extension to POMDP / reinforcement learning agents
+
+---
+
+## 8. Authorship Note
+
+All core components (market model, strategy logic, execution engine) were implemented manually within a short prototyping cycle (<24 hours).
+
+External assistance was limited to:
+
+* Plotting utilities (`plot.py`)
+* Documentation refinement
+
+---
+
+## 9. Summary
+
+This project demonstrates that:
+
+> **Strategy performance is not intrinsic — it is conditional on the structure of the environment.**
+
+Understanding that interaction is more valuable than optimizing any single strategy in isolation.
