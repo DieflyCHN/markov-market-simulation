@@ -1,5 +1,7 @@
 # Markov Regime-Switching Market Simulator
 
+**Version: v0.2.1-alpha**
+
 A minimal simulation framework for studying how trading strategies interact with stochastic market structures under controlled assumptions.
 
 ---
@@ -44,11 +46,11 @@ The system is organized into three layers:
   P_{t+1} = P_t · (1 + r_t)
   ```
 
-  where ( r_t ) is sampled from a state-dependent distribution.
+  where `r_t` is sampled from a state-dependent distribution.
 
-* Key property:
+* Key properties:
 
-  * **Temporal persistence** (via Markov transitions)
+  * **Temporal persistence** (Markov memory)
   * No intrinsic mean reversion in price level
 
 ---
@@ -62,8 +64,8 @@ Rule-based decision functions operating on **observable variables only**:
 
 Supported archetypes:
 
-* **Momentum**: buy after consecutive increases
-* **Mean reversion**: buy after consecutive decreases
+* **Momentum** — buy after consecutive increases
+* **Mean reversion** — buy after consecutive decreases
 
 Sell logic (position-level):
 
@@ -92,7 +94,9 @@ Sell logic (position-level):
   Equity = Cash + Σ(position_i_value)
   ```
 
-* Execution is **order-driven**, decoupled from signal generation.
+* Execution is **order-driven** and includes:
+
+  * Transaction costs (brokerage, transfer fee, stamp duty)
 
 ---
 
@@ -100,21 +104,17 @@ Sell logic (position-level):
 
 At each step:
 
-1. Observe current state ((P_t, \text{streak}_t))
+1. Observe current state `(P_t, streak_t)`
 2. Generate trading decisions
-3. Execute trades at (P_t)
+3. Execute trades at `P_t`
 4. Update equity
-5. Advance market to (P_{t+1})
-
-This implies:
+5. Advance market to `P_{t+1}`
 
 > Strategies react to **completed price information**, not intra-step changes.
 
 ---
 
 ## 4. Key Observations
-
-Empirical behaviors observed under typical configurations:
 
 ### 4.1 Mean Reversion
 
@@ -134,8 +134,8 @@ Empirical behaviors observed under typical configurations:
 
 ### 4.3 Path Dependence
 
-* Outcomes strongly depend on trajectory, not just distribution
-* Identical parameters can yield divergent equity curves
+* Outcomes depend strongly on trajectory
+* Identical parameters can yield divergent results
 
 ---
 
@@ -143,27 +143,24 @@ Empirical behaviors observed under typical configurations:
 
 Due to multiplicative dynamics:
 
-* A −50% loss requires +100% recovery
-* Large drawdowns are structurally difficult to recover from
+* −50% loss requires +100% recovery
+* Large drawdowns are structurally difficult to recover
 
 ---
 
 ### 4.5 Role of Stop-Loss
 
-* Functions as **path-risk control**
+* Acts as **path-risk control**
 * Reduces tail risk rather than increasing expected return
 
 ---
 
 ## 5. Limitations
 
-This is a deliberately simplified model:
-
-* No transaction costs or slippage
-* Uniform return distributions (no heavy tails)
+* No slippage or market impact
+* Simplified return distributions (uniform sampling)
 * Manually specified transition probabilities
-* No statistical validation (single-path runs)
-* No liquidity or market impact modeling
+* No statistical validation (single-path simulation)
 
 ---
 
@@ -175,7 +172,7 @@ The system prioritizes:
 * **Mechanisms over data-fitting**
 * **Interpretability over performance**
 
-It is best viewed as a **conceptual laboratory**, not a trading tool.
+It is best viewed as a **conceptual laboratory**, not a trading system.
 
 ---
 
@@ -183,9 +180,9 @@ It is best viewed as a **conceptual laboratory**, not a trading tool.
 
 * Monte Carlo simulation (distribution-level analysis)
 * Parameter calibration using empirical data
-* Transaction cost and slippage modeling
+* Slippage and market impact modeling
 * Risk-aware position sizing
-* Extension to POMDP / reinforcement learning agents
+* Extension toward POMDP / reinforcement learning agents
 
 ---
 
@@ -202,8 +199,6 @@ External assistance was limited to:
 
 ## 9. Summary
 
-This project demonstrates that:
-
 > **Strategy performance is not intrinsic — it is conditional on the structure of the environment.**
 
-Understanding that interaction is more valuable than optimizing any single strategy in isolation.
+Understanding this interaction is more valuable than optimizing any single strategy in isolation.
