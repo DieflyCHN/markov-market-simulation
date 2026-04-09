@@ -1,6 +1,6 @@
 # Markov Regime-Switching Market Simulator
 
-**Version: v0.2.1-alpha**
+**Version: v0.2.2-alpha**
 
 A minimal simulation framework for studying how trading strategies interact with stochastic market structures under controlled assumptions.
 
