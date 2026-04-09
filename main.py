@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from plot import plot_result
 from market_simulation.market_simulator import MarketIndex
-from trady import signal_buy_chasing, signal_buy_lowBuild, signal_sell
+from trady import signal_buy_chasing, signal_buy_lowBuild, signal_sell, signal_buy_random
 from account import Account
 from config import MAIN_CONFIG
 CFG = MAIN_CONFIG
@@ -23,15 +23,19 @@ while market_index.tick < CFG.MAX_TICKS:
   
     # Selling Strategy
     orders = signal_sell(account, current_price)
-
     for order in sorted(orders, key=lambda x: x["position_num"], reverse=True):
         account.sell(current_price, order["position_num"], order["shares_to_sell"])
 
-    # Buying Strategy (Switch Option not finished, use it by hand)
-    # if signal_buy_lowBuild(market_index.down_streak):
-    if signal_buy_chasing(market_index.up_streak):
-        account.buy(current_price)
+    # Buying Strategy
+    # Future: `signal_buy_xxx` will determine how many shares to buy; currently in a transitional state.
+    cash_to_buy_pct = signal_buy_lowBuild()
+    if cash_to_buy_pct > 0:
+        amount_to_buy = account.cash * cash_to_buy_pct
+        shares_to_buy = int(amount_to_buy / current_price)
+        if shares_to_buy != 0:
+            account.buy(current_price, shares_to_buy)
 
+    # Update account informations
     account.update_position()
     account.update_book_value(current_price)
 

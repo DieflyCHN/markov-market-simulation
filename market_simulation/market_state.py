@@ -54,4 +54,8 @@ class MarketState:
             pct = random.uniform(CFG.FLUC_PCT_LOWER, CFG.FLUC_PCT_UPPER) / 100
         
         new_price = current_price * (1 + pct)
-        return round (new_price, 2)
+
+        if round (new_price, 2) == 0:
+            return 0.01
+        else:
+            return round (new_price, 2)

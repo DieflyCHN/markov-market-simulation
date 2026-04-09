@@ -3,17 +3,18 @@ from config import TRADY_CONFIG
 CFG = TRADY_CONFIG
 
 def signal_buy_lowBuild(down_streak):
-    """
-    Buy rule:
-    If `down_streak >= 5`, buy using 50% of current cash.
-    This rule will `repeatedly` trigger during continuous downward trends,
-    resulting in progressively smaller position entries (geometric scaling).
-    If you dont like it, use `down_streak == 5`.
-    """
-    return down_streak == 5
+    return CFG.LOW_BUILD_MAP.get(down_streak, 0)
 
 def signal_buy_chasing(up_streak):
     return up_streak == 5
+
+
+def signal_buy_random():
+    import random
+    if random.uniform(0, 1) > 0.5:
+        return 0.5
+    else:
+        return 0
 
 def signal_sell(account, current_price):
     orders = []
