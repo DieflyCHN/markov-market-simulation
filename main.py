@@ -28,7 +28,7 @@ while market_index.tick < CFG.MAX_TICKS:
 
     # Buying Strategy
     # Future: `signal_buy_xxx` will determine how many shares to buy; currently in a transitional state.
-    cash_to_buy_pct = signal_buy_lowBuild()
+    cash_to_buy_pct = signal_buy_lowBuild(market_index.down_streak)
     if cash_to_buy_pct > 0:
         amount_to_buy = account.cash * cash_to_buy_pct
         shares_to_buy = int(amount_to_buy / current_price)
