@@ -18,30 +18,14 @@ This design ensures that:
 
 #!/usr/bin/env python
 from market_simulation.market_state import MarketState
-
-# # --- Simulation loop ---
-# # At each step:
-# #   - The current market state generates a price change
-# #   - Then the state transitions to the next regime (Markov update)
-# step = 1
-# prices = []
-# while step <= 100000:
-#     # Price update driven by current state
-#     price, state = market.next_price(price)
-#     prices.append(price)
-#     print(f"Step {step:2d} | State: {state:9s} | Price: ${price:.2f}")
-
-#     # Transition to next state (Markov chain)
-#     market.next_state()
-
-#     # input("Press Enter for next tick...")
-#     step += 1
+from config import MARKET_INDEX_CONFIG
+CFG = MARKET_INDEX_CONFIG
 
 class MarketIndex:
     def __init__(self, mode):
         self.market = MarketState()
         self.mode = mode
-        self.current_price = 100.00
+        self.current_price = CFG.START_PRICE
         self.previous_price = None
         self.down_streak = 0
         self.up_streak = 0
