@@ -1,5 +1,5 @@
-# All name with PCT (percentage) should without "%"
-# Like 90 (90%)
+# All names with PCT (percentage) are integer values without "%".
+# e.g. 90 means 90%. Divide by 100 before use in calculations.
 class MAIN_CONFIG:
     MAX_TICKS = 10000
 
@@ -35,10 +35,10 @@ class ACCOUNT_CONFIG:
     START_CASH = 10000
 
 class TRADY_CONFIG:
-    PROFIT_PCT = 10 #in Percentage without "%"
-    PARTIAL_PROFIT_PCT = 5
-    PARTIAL_SHARES_PCT = 50
-    STOP_LOSS_PCT = 5
+    PROFIT_PCT = 10           # 10% take-profit → full sell
+    PARTIAL_PROFIT_PCT = 5    # 5% partial profit → sell portion
+    PARTIAL_SHARES_PCT = 50   # sell 50% of position shares
+    STOP_LOSS_PCT = 5         # 5% stop-loss (applied as negative in trady.py)
 
     LOW_BUILD_MAP = {   # down_streak: cash_to_buy_pct
         5: 0.8,

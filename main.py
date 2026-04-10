@@ -31,8 +31,9 @@ while market_index.tick < CFG.MAX_TICKS:
     cash_to_buy_pct = signal_buy_lowBuild(market_index.down_streak)
     if cash_to_buy_pct > 0:
         amount_to_buy = account.cash * cash_to_buy_pct
-        shares_to_buy = int(amount_to_buy / current_price)
-        if shares_to_buy != 0:
+        fee_estimate = account.trading_fees_Ashare(amount_to_buy, "buy")
+        shares_to_buy = int((amount_to_buy - fee_estimate) / current_price)
+        if shares_to_buy > 0:
             account.buy(current_price, shares_to_buy)
 
     # Update account informations

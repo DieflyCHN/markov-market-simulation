@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from config import ACCOUNT_CONFIG
+from config import ACCOUNT_CONFIG, A_SHARE
 CFG = ACCOUNT_CONFIG
 
 class Account:
@@ -73,7 +73,6 @@ class Account:
         amount : Amount of buying/selling
         usage : "buy" / "sell"
         """
-        from config import A_SHARE
         a = A_SHARE
 
         fees = 0.0
