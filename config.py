@@ -7,9 +7,9 @@ class MARKET_STATE_CONFIG:
     # Markov state space
     # Each type should sum as 1
     # BULL
-    BULL_TO_BULL = 0.6
-    BULL_TO_BEAR = 0.2
-    BULL_TO_FLUC = 0.2
+    BULL_TO_BULL = 0.7
+    BULL_TO_BEAR = 0.15
+    BULL_TO_FLUC = 0.15
     # BEAR
     BEAR_TO_BULL = 0.2
     BEAR_TO_BEAR = 0.6
@@ -23,7 +23,7 @@ class MARKET_STATE_CONFIG:
     BULL_PCT_LOWER = -1
     BULL_PCT_UPPER = 10
         # Be careful! Negativ should be reversed!
-    BEAR_PCT_LOWER = -10
+    BEAR_PCT_LOWER = -12
     BEAR_PCT_UPPER = 1
     FLUC_PCT_LOWER = -1
     FLUC_PCT_UPPER = 1
@@ -40,13 +40,17 @@ class TRADY_CONFIG:
     PARTIAL_SHARES_PCT = 50
     STOP_LOSS_PCT = -5  #Stop loss line should be negative!
 
-    LOW_BUILD_MAP = {   # down_streak: cash_to_buy_pct
-        5: 0.8,
-        6: 0.3,
-        7: 0.1
+    LOW_BUILD_MAP = {   # down_streak: cash_to_buy_(pct)
+        5: 80 / 100,
+        6: 30 / 100,
+        7: 0.1/ 100
     }
 
-
+    CHASING_MAP = {     # dup_streak: cash_to_buy_(pct)
+        5: 0.8 / 100,
+        6: 0.3 / 100,
+        7: 0.1 / 100
+    }
 
 class A_SHARE:
     # Stamp duty 印花税, 5 per 10k, Price is fixed nationwide and `non-negotiable`.
@@ -58,3 +62,19 @@ class A_SHARE:
     TRANSFER_FEE = 0.1 / 10000
     # Trading fee 规费, 0.0541 per 10k, allready calc in Brokerage comm., no more usage
     # TRADING_FEE = 0.0541 / 10000
+
+class BELIEF:
+    # Belief_start sum = 1
+    BULL_BELIEF_START = 1/3
+    BEAR_BELIEF_START = 1/3
+    FLUC_BELIEF_START = 1/3
+
+    UP_STREAK_CONDITION = 5
+    UP_BULL_CHANGE_PCT = 15
+    UP_BEAR_CHANGE_PCT = -10
+    UP_FLUC_CHANGE_PCT = 5
+
+    DOWN_STREAK_CONDITION = 5
+    DOWN_BULL_CHANGE_PCT = -10
+    DOWN_BEAR_CHANGE_PCT = 15
+    DOWN_FLUC_CHANGE_PCT = 5

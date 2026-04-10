@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from plot import plot_result
-from market_simulation.market_simulator import MarketIndex
-from trady import signal_buy_chasing, signal_buy_lowBuild, signal_sell, signal_buy_random
+
 from account import Account
+from market_simulation.market_simulator import MarketIndex
+from belief import init_belief
+from trady import signal_buy_belief, signal_sell
 from config import MAIN_CONFIG
 CFG = MAIN_CONFIG
 
@@ -17,6 +19,7 @@ while mode not in ["U", "R", "F"]:
 
 market_index = MarketIndex(mode)    # obserable Index (for trader)
 account = Account()
+belief = init_belief()
 
 while market_index.tick < CFG.MAX_TICKS:
     current_price = market_index.current_price
@@ -28,7 +31,7 @@ while market_index.tick < CFG.MAX_TICKS:
 
     # Buying Strategy
     # Future: `signal_buy_xxx` will determine how many shares to buy; currently in a transitional state.
-    cash_to_buy_pct = signal_buy_lowBuild(market_index.down_streak)
+    cash_to_buy_pct = signal_buy_belief(belief)
     if cash_to_buy_pct > 0:
         amount_to_buy = account.cash * cash_to_buy_pct
         shares_to_buy = int(amount_to_buy / current_price)

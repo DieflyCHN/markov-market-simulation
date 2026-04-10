@@ -6,8 +6,7 @@ def signal_buy_lowBuild(down_streak):
     return CFG.LOW_BUILD_MAP.get(down_streak, 0)
 
 def signal_buy_chasing(up_streak):
-    return up_streak == 5
-
+    return CFG.CHASING_MAP.get(up_streak, 0)
 
 def signal_buy_random():
     import random
@@ -15,6 +14,30 @@ def signal_buy_random():
         return 0.5
     else:
         return 0
+
+def signal_buy_belief(belief:dict):
+    """
+    Convert regime belief directly into desired cash allocation.
+
+    bull -> stronger long bias
+    bear -> suppress long exposure
+    fluc -> allow small exploratory positions
+    """
+    # These `magic numbers` are worth discussing and adjusting.
+    pct = belief["bull"] * 0.3 + belief["fluc"] * 0.05 - belief["bear"] * 0.3
+    return max(0, min(pct, 1))
+
+def signal_buy_belief_route(belief: dict, up_streak, down_streak):
+    # This Route strategy results in very sparse final decisions, 
+    # making it almost impossible to trigger purchase conditions. 
+    state = max(belief, key=belief.get)
+
+    if state == "bull":
+        return signal_buy_chasing(up_streak)
+    elif state == "bear":
+        return signal_buy_lowBuild(down_streak)
+    else:
+        return signal_buy_random()
 
 def signal_sell(account, current_price):
     orders = []

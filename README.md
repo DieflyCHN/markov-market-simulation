@@ -1,6 +1,6 @@
 # Markov Regime-Switching Market Simulator
 
-**Version: v0.2.3-alpha**
+**Version: v0.3.0-alpha**
 
 A minimal simulation framework for studying how trading strategies interact with stochastic market structures under controlled assumptions.
 
@@ -57,15 +57,37 @@ The system is organized into three layers:
 
 ### 2.2 Strategy (Trady)
 
-Rule-based decision functions operating on **observable variables only**:
+Strategies now operate on **partially observable information**:
 
 * Price
 * Up/down streaks (trend proxy)
+* **Latent belief over hidden regimes (bull / bear / fluc)**
 
-Supported archetypes:
+#### Belief Layer (new in v0.3)
 
-* **Momentum** — buy after consecutive increases
-* **Mean reversion** — buy after consecutive decreases
+A lightweight belief system approximates the hidden market state:
+
+```
+observation → belief → action
+```
+
+* Belief is updated heuristically based on streak dynamics
+* Not a full Bayesian filter, but captures **state inference behavior**
+* Represents a **POMDP-like extension** of the original framework
+
+#### Decision Modes
+
+The framework now supports two paradigms:
+
+* **Rule-based strategies**
+
+  * Momentum (buy after consecutive rises)
+  * Mean reversion (buy after consecutive drops)
+
+* **Belief-driven strategies (new)**
+
+  * Belief directly controls **position sizing**
+  * Transitions from binary decisions (“buy / not buy”) to **continuous exposure control**
 
 Sell logic (position-level):
 
@@ -105,10 +127,11 @@ Sell logic (position-level):
 At each step:
 
 1. Observe current state `(P_t, streak_t)`
-2. Generate trading decisions
-3. Execute trades at `P_t`
-4. Update equity
-5. Advance market to `P_{t+1}`
+2. Update belief (latent inference)
+3. Generate trading decisions
+4. Execute trades at `P_t`
+5. Update equity
+6. Advance market to `P_{t+1}`
 
 > Strategies react to **completed price information**, not intra-step changes.
 
@@ -132,14 +155,22 @@ At each step:
 
 ---
 
-### 4.3 Path Dependence
+### 4.3 Belief-Driven Control (new)
+
+* Converts latent state inference into **position sizing decisions**
+* Reduces reliance on sparse trigger conditions
+* Enables smoother adaptation across regimes
+
+---
+
+### 4.4 Path Dependence
 
 * Outcomes depend strongly on trajectory
 * Identical parameters can yield divergent results
 
 ---
 
-### 4.4 Irreversibility of Drawdowns
+### 4.5 Irreversibility of Drawdowns
 
 Due to multiplicative dynamics:
 
@@ -148,7 +179,7 @@ Due to multiplicative dynamics:
 
 ---
 
-### 4.5 Role of Stop-Loss
+### 4.6 Role of Stop-Loss
 
 * Acts as **path-risk control**
 * Reduces tail risk rather than increasing expected return
@@ -160,6 +191,7 @@ Due to multiplicative dynamics:
 * No slippage or market impact
 * Simplified return distributions (uniform sampling)
 * Manually specified transition probabilities
+* Belief update is **heuristic (non-Bayesian)**
 * No statistical validation (single-path simulation)
 
 ---
@@ -182,7 +214,8 @@ It is best viewed as a **conceptual laboratory**, not a trading system.
 * Parameter calibration using empirical data
 * Slippage and market impact modeling
 * Risk-aware position sizing
-* Extension toward POMDP / reinforcement learning agents
+* Full Bayesian belief update (true POMDP formulation)
+* Extension toward reinforcement learning agents
 
 ---
 
@@ -201,4 +234,6 @@ External assistance was limited to:
 
 > **Strategy performance is not intrinsic — it is conditional on the structure of the environment.**
 
-Understanding this interaction is more valuable than optimizing any single strategy in isolation.
+The introduction of a belief layer further demonstrates that:
+
+> **Decision quality depends not only on observable signals, but on how hidden structure is inferred and acted upon.**
