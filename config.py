@@ -38,7 +38,7 @@ class TRADY_CONFIG:
     PROFIT_PCT = 10 #in Percentage without "%"
     PARTIAL_PROFIT_PCT = 5
     PARTIAL_SHARES_PCT = 50
-    STOP_LOSS_PCT = 5
+    STOP_LOSS_PCT = -5  #Stop loss line should be negative!
 
     LOW_BUILD_MAP = {   # down_streak: cash_to_buy_pct
         5: 0.8,

@@ -23,9 +23,10 @@ def signal_sell(account, current_price):
         rate = (current_price - pos["entry_price"]) / pos["entry_price"]
         shares_to_sell = 0
 
+        # This includes both profit-taking and stop-loss decisions.
         if rate >= (CFG.PROFIT_PCT / 100) or rate <= (CFG.STOP_LOSS_PCT / 100):
             shares_to_sell = pos["shares"]
-        elif rate >= (CFG.PARTIAL_PROFIT_PCT):
+        elif rate >= (CFG.PARTIAL_PROFIT_PCT / 100):
             # Sell a part of all shares
             shares_to_sell = int(pos["shares"] * CFG.PARTIAL_SHARES_PCT / 100)
             # when only have 1 share, it will become 0, so just sell it
