@@ -3,7 +3,7 @@ from plot import plot_result
 
 from account import Account
 from market_simulation.market_simulator import MarketIndex
-from belief import init_belief
+from belief import init_belief, update_belief
 from trady import signal_buy_belief, signal_sell
 from config import MAIN_CONFIG
 CFG = MAIN_CONFIG
@@ -42,6 +42,8 @@ while market_index.tick < CFG.MAX_TICKS:
     account.update_position()
     account.update_book_value(current_price)
 
+    # Regain your belief and begin the next tick.
+    belief = update_belief(belief, market_index.up_streak, market_index.down_streak)
     market_index.next_tick()
 
 print(account.book_value)

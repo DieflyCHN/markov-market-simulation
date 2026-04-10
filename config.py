@@ -7,9 +7,9 @@ class MARKET_STATE_CONFIG:
     # Markov state space
     # Each type should sum as 1
     # BULL
-    BULL_TO_BULL = 0.7
-    BULL_TO_BEAR = 0.15
-    BULL_TO_FLUC = 0.15
+    BULL_TO_BULL = 0.6
+    BULL_TO_BEAR = 0.2
+    BULL_TO_FLUC = 0.2
     # BEAR
     BEAR_TO_BULL = 0.2
     BEAR_TO_BEAR = 0.6
@@ -23,7 +23,7 @@ class MARKET_STATE_CONFIG:
     BULL_PCT_LOWER = -1
     BULL_PCT_UPPER = 10
         # Be careful! Negativ should be reversed!
-    BEAR_PCT_LOWER = -12
+    BEAR_PCT_LOWER = -10
     BEAR_PCT_UPPER = 1
     FLUC_PCT_LOWER = -1
     FLUC_PCT_UPPER = 1
