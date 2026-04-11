@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import random
-from config import MARKET_STATE_CONFIG
+from config import MARKET_STATE_CONFIG, A_SHARE
 CFG = MARKET_STATE_CONFIG
+ASHARE_CFG = A_SHARE
+import math_tools as mymath
 
 class MarketState:
     """
@@ -36,12 +38,17 @@ class MarketState:
 
     def next_price(self, current_price):
         """
-        Generate the next price based on the current market state.
+        Keep the original interface;
+        you can now change the price simulation method here
+        by modifying the `return` statement.
+        """
+        return self.next_price_capped_normal(current_price)
 
-        The price change is stochastic but conditioned on the current regime:
-            - bull: positive drift
-            - bear: negative drift
-            - fluc: high volatility, no clear drift
+    def next_price_uniform(self, current_price):
+        """   
+        This function will draw samples with equal probability within
+        a given interval, resulting in poor realism, but it is easier
+        to understand.
 
         Returns:
             new_price: updated price
@@ -55,7 +62,69 @@ class MarketState:
         
         new_price = current_price * (1 + pct)
 
+        # Magic if/else, No meaning!
         if round (new_price, 2) == 0:
             return 0.01
         else:
             return round (new_price, 2)
+    
+    def _get_state_dist_params(self, config):
+        if self.state == "bull":
+            return {
+                "mu": config.BULL_MU,
+                "sigma": config.BULL_SIGMA,
+                "lower": config.BULL_LOWER,
+                "upper": config.BULL_UPPER
+            }
+        elif self.state == "bear":
+            return {
+                "mu": config.BEAR_MU,
+                "sigma": config.BEAR_SIGMA,
+                "lower": config.BEAR_LOWER,
+                "upper": config.BEAR_UPPER
+            }
+        elif self.state == "fluc":
+            return {
+                "mu": config.FLUC_MU,
+                "sigma": config.FLUC_SIGMA,
+                "lower": config.FLUC_LOWER,
+                "upper": config.FLUC_UPPER
+            }
+        else:
+            raise ValueError(f"Unknown market state: {self.state}")
+
+    def next_price_normal(self, current_price):
+        params = self._get_state_dist_params(CFG)
+        pct = mymath.sample_normal(params["mu"], params["sigma"])
+        new_price = current_price * (1 + pct)
+        return round(new_price, 2)
+
+    def next_price_truncated_normal(self, current_price):
+        """
+        Uses a truncated normal distribution to generate returns.
+
+        Compared to a standard normal distribution:
+        - prevents extreme outliers
+        - keeps returns within a controlled range
+
+        More realistic than uniform sampling.
+        """
+        params = self._get_state_dist_params(CFG)
+        pct = mymath.sample_truncated_normal(
+            params["mu"], params["sigma"],
+            params["lower"], params["upper"])
+        new_price = current_price * (1 + pct)
+        return round(new_price, 2)
+
+    def next_price_capped_normal(self, current_price):
+        """
+        Suitable for simulating markets with price limit systems,
+        such as the A-share market.
+        """
+        params = self._get_state_dist_params(ASHARE_CFG)
+        pct = mymath.sample_capped_normal(
+            params["mu"], params["sigma"],
+            params["lower"], params["upper"])
+        new_price = current_price * (1 + pct)
+        return round(new_price, 2)
+        
