@@ -5,6 +5,8 @@ class MAIN_CONFIG:
 
 class MARKET_STATE_CONFIG:
     # Markov state space
+
+    # Uniform:
     # Each type should sum as 1
     # BULL
     BULL_TO_BULL = 0.6
@@ -27,6 +29,23 @@ class MARKET_STATE_CONFIG:
     BEAR_PCT_UPPER = 1
     FLUC_PCT_LOWER = -1
     FLUC_PCT_UPPER = 1
+
+    # (Truncated) normol distribution
+    # MU / SIGMA / LOWER / UPPER use decimal return units, e.g. 0.10 means 10%.
+    BULL_MU = 0.003
+    BULL_SIGMA = 0.015
+    BULL_LOWER = -0.03
+    BULL_UPPER = 0.1
+
+    BEAR_MU = -0.003
+    BEAR_SIGMA = 0.015
+    BEAR_LOWER = -0.1
+    BEAR_UPPER = 0.03
+
+    FLUC_MU = 0.0
+    FLUC_SIGMA = 0.03
+    FLUC_LOWER = -0.03
+    FLUC_UPPER = 0.03
 
 class MARKET_INDEX_CONFIG:
     START_PRICE = 100
@@ -60,8 +79,29 @@ class A_SHARE:
     BROKERAGE_COMM_MIN = 5
     # Transfer fee 过户费, 0.1 per 10k
     TRANSFER_FEE = 0.1 / 10000
-    # Trading fee 规费, 0.0541 per 10k, allready calc in Brokerage comm., no more usage
+    # Trading fee 规费, 0.0541 per 10k, already calc in Brokerage comm., no more usage
     # TRADING_FEE = 0.0541 / 10000
+
+    # NOTE:
+    # Distribution parameters are duplicated intentionally.
+    # MARKET_STATE_CONFIG is for generic normal/truncated simulation.
+    # A_SHARE is reserved for capped A-share-specific simulation.
+    # Capped distribution function
+    # MU / SIGMA / LOWER / UPPER use decimal return units, e.g. 0.10 means 10%.
+    BULL_MU = 0.003
+    BULL_SIGMA = 0.015
+    BULL_LOWER = -0.03
+    BULL_UPPER = 0.1
+
+    BEAR_MU = -0.003
+    BEAR_SIGMA = 0.015
+    BEAR_LOWER = -0.1
+    BEAR_UPPER = 0.03
+
+    FLUC_MU = 0.0
+    FLUC_SIGMA = 0.03
+    FLUC_LOWER = -0.03
+    FLUC_UPPER = 0.03
 
 class BELIEF:
     # Belief_start sum = 1

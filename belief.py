@@ -24,10 +24,10 @@ def update_belief(belief: dict, up_streak, down_streak):
     new_belief = belief.copy()
     if up_streak >= CFG.UP_STREAK_CONDITION:
         new_belief["bull"] += CFG.UP_BULL_CHANGE_PCT / 100
-        new_belief["bear"] -= CFG.UP_BEAR_CHANGE_PCT / 100
+        new_belief["bear"] += CFG.UP_BEAR_CHANGE_PCT / 100
         new_belief["fluc"] += CFG.UP_FLUC_CHANGE_PCT / 100
     elif down_streak >= CFG.DOWN_STREAK_CONDITION:
-        new_belief["bull"] -= CFG.DOWN_BULL_CHANGE_PCT / 100
+        new_belief["bull"] += CFG.DOWN_BULL_CHANGE_PCT / 100
         new_belief["bear"] += CFG.DOWN_BEAR_CHANGE_PCT / 100
         new_belief["fluc"] += CFG.DOWN_FLUC_CHANGE_PCT / 100
 

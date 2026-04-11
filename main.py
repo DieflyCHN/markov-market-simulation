@@ -42,9 +42,38 @@ while market_index.tick < CFG.MAX_TICKS:
     account.update_position()
     account.update_book_value(current_price)
 
-    # Regain your belief and begin the next tick.
-    belief = update_belief(belief, market_index.up_streak, market_index.down_streak)
+    # === Temporal semantics of belief update ===
+    #
+    # There are two valid interpretations of when belief should be updated:
+    #
+    # (A) End-of-period update (current implementation)
+    #     - Each tick represents a completed observation window (e.g., one trading day).
+    #     - The trader makes decisions at the beginning of tick t using belief from t-1.
+    #     - The market then evolves during tick t (price update + streak update).
+    #     - After observing the outcome of tick t, belief is updated,
+    #       and will be used for decisions at tick t+1.
+    #
+    #     Timeline:
+    #         decision(t) -> market evolves(t) -> observe -> update belief -> decision(t+1)
+    #
+    #     This matches typical low-frequency trading intuition:
+    #     "After seeing today's close, decide what to do tomorrow."
+    #
+    # (B) Online / lagged update
+    #     - The trader can only use fully completed past information.
+    #     - Current tick outcome is not yet observable when making decisions.
+    #     - Belief is therefore always one tick behind the latest market move.
+    #
+    #     Timeline:
+    #         decision(t) -> update belief(t-1 info) -> market evolves(t)
+    #
+    #     This resembles high-frequency / streaming settings where
+    #     the current period is still unfolding and not fully known.
+    #
+    # We adopt (A) here for clearer economic interpretation and consistency
+    # with streak-based signals and regime learning.
     market_index.next_tick()
+    belief = update_belief(belief, market_index.up_streak, market_index.down_streak)
 
 print(account.book_value)
 plot_result(market_index.price_history, account.book_value_history)
